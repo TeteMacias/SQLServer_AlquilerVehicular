@@ -26,3 +26,34 @@ go
 
 select * from HISTORIALRESERVA;
 select * from RESERVA;
+
+/*CREAMOS CURSOR QUE ME PERMITA ACTUALIZAR DATOS EN TABLA REGISTROENCARGADODEPART Y QUE EL LOS DATOS QUE ESTAN PENDIENTES, LOS PASE A CANCELADO*/
+--Declaramos el cursor
+Declare actualizandoDatos CURSOR
+/*HACEMOS LA CONSULTA */
+FOR select CodiReserva, estadoPago from RESERVA
+--Abrimos el cursor
+OPEN actualizandoDatos
+/*Declaramos variables de las columnas*/
+declare @CodiReserva int, @estadoPago varchar (10)
+--Navegamos 
+Fetch next from actualizandoDatos into @CodiReserva, @estadoPago
+--recorremos un ciclo mientras el fetch estatus sea =0
+while (@@FETCH_STATUS = 0)
+BEGIN
+	if @estadoPago = 'PENDIENTE'
+	begin
+		UPDATE RESERVA set estadoPago = 'CANCELADO'
+		where CodiReserva=@CodiReserva
+		print concat('Se actualiza los datos de tipo de pago del código de reserva', @CodiReserva)
+	end
+    Fetch next from actualizandoDatos into @CodiReserva, @estadoPago
+END
+print 'Fin del Cursor Actualizando Datos'
+--Cerramos el cursor
+CLOSE actualizandoDatos
+--Liberamos de la memoria
+DEALLOCATE actualizandoDatos
+GO
+select * from RESERVA;
+go
