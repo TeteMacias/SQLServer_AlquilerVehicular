@@ -57,3 +57,17 @@ DEALLOCATE actualizandoDatos
 GO
 select * from RESERVA;
 go
+
+/*CREAMOS PROCEDIMIENTO ALMACENADO QUE ME PERMITA VER QUE CLIENTE TIENE UNA CANTIDAD DE RESERVA EN LA BASE DE DATOS*/
+create proc totalVehiculoRentado
+@cliente int,
+@totalReserva int output 
+AS
+BEGIN
+select @totalReserva=count(CodiReserva)
+from RESERVA WHERE IDClientepk=@cliente
+end
+
+declare @total int
+exec dbo.totalVehiculoRentado 2, @totalReserva=@total output
+print 'El total de la reserva por el cliente es: '+ltrim (@total)
