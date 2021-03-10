@@ -1,0 +1,28 @@
+/*CREAMOS TRIGGER Q PERMITA GUARDAR HISTORIAL DE REGISTRO DE RESERVA*/
+--CREAMOS TABLA HISTORIAL
+create table HISTORIALRESERVA(
+    Fecha date,
+	CodiReserva integer NOT NULL,
+	Descripcion varchar (100),
+	usuario varchar (30)
+	);
+	GO
+
+/*CREAMOS TRIGGER Q PERMITA GUARDAR HISTORIAL DE REGISTRO DE RESERVA*/
+create trigger TR_ReservaInsertado
+on RESERVA for insert
+AS
+set nocount on
+declare @CodiReserva integer
+select @CodiReserva = CodiReserva from inserted
+insert into HISTORIALRESERVA values (GETDATE(), @CodiReserva, 'Registro Insertado en tabla Reserva', SYSTEM_USER)
+go
+
+/*GUARDAMOS UNA RESERVA Y CONSULTAMOS EN AMBAS TABLAS*/
+set dateformat ymd;
+insert into RESERVA values
+(1006, 02, 304, 'B', '2021/03/09 11:00.56', '2021/03/09 16:40.20', 'EFECTIVO',  'CANCELADO')
+go
+
+select * from HISTORIALRESERVA;
+select * from RESERVA;
